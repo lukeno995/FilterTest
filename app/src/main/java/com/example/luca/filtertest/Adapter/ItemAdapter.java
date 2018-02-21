@@ -2,17 +2,15 @@ package com.example.luca.filtertest.Adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import com.example.luca.filtertest.ItemListDialogFragment;
 import com.example.luca.filtertest.Model.FilterPassenger;
 import com.example.luca.filtertest.R;
-import com.example.luca.filtertest.DataStorage.SharedClass;
-
 import java.util.ArrayList;
 
 
@@ -23,20 +21,24 @@ import java.util.ArrayList;
 public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     private ArrayList<FilterPassenger> passengerList;
     private Context  ctx;
-    public ItemAdapter(ArrayList<FilterPassenger> filterList , Context ctx) {
+    private ItemListDialogFragment.Listener mListener;
+
+
+    public ItemAdapter(ArrayList<FilterPassenger> filterList , Context ctx, ItemListDialogFragment.Listener listener) {
         this.passengerList =  filterList;
         this.ctx = ctx;
+        this.mListener = listener;
 
     }
 
     @Override
     public ItemAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_item_list_dialog_item, parent, false);
-        return new ViewHolder(itemView);
+        return new ViewHolder(itemView,mListener);
     }
 
     @Override
-    public void onBindViewHolder(ItemAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ItemAdapter.ViewHolder holder, final int position) {
         final FilterPassenger item = passengerList.get(position);
         holder.sw.setChecked(item.isCheck());
         holder.tx.setText(item.getNome());
@@ -45,16 +47,13 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    SharedClass.changeCheck(item , ctx);
+                   mListener.check(position);
+
                 }else{
-                    SharedClass.changeCheck(item , ctx);
+                    mListener.unCheck(position);
                 }
             }
         });
-
-
-
-
     }
 
     @Override
@@ -66,10 +65,11 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
         public Switch sw;
         public TextView tx;
 
-        public ViewHolder(View itemView) {
+        public ViewHolder(View itemView, final ItemListDialogFragment.Listener mListener) {
             super(itemView);
             sw =  itemView.findViewById(R.id.sw);
             tx = itemView.findViewById(R.id.textView);
+
 
         }
 

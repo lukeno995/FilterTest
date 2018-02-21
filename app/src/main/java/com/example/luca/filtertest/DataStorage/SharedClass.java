@@ -15,18 +15,6 @@ import java.util.ArrayList;
  */
 
 public class SharedClass {
-
-    public static void savePassenger(FilterPassenger passenger, Context ctx){
-        ArrayList<FilterPassenger> filterPassengers;
-        SharedPreferences pref = ctx.getSharedPreferences("LISTA",Context.MODE_PRIVATE);
-        SharedPreferences.Editor edit = pref.edit();
-        filterPassengers = getPassenger(ctx);
-        filterPassengers.add(passenger);
-        Gson gson = new Gson();
-        String json = gson.toJson(filterPassengers);
-        edit.putString("jsonString", json);
-        edit.commit();
-    }
     public static void savePassengers(ArrayList<FilterPassenger> passengers, Context ctx){
         SharedPreferences pref = ctx.getSharedPreferences("LISTA",Context.MODE_PRIVATE);
         SharedPreferences.Editor edit = pref.edit();
@@ -35,31 +23,15 @@ public class SharedClass {
         edit.putString("jsonString", json);
         edit.commit();
     }
-
-    public static void changeCheck(FilterPassenger passenger, Context ctx){
-        ArrayList<FilterPassenger> filterPassengers = getPassenger(ctx);
-        ArrayList<FilterPassenger> filter2 = new ArrayList<>();
-        for(FilterPassenger fp:filterPassengers){
-            if(!fp.equals(passenger)){
-                filter2.add(fp);
-            }else{
-                filter2.add(passenger);
-            }
-        }
-        savePassengers(filter2,ctx);
-    }
-
     public static ArrayList<FilterPassenger> getPassenger(Context ctx){
-        ArrayList<FilterPassenger> filterPassengers;
+        ArrayList<FilterPassenger> filterPassengers = null;
         SharedPreferences pref = ctx.getSharedPreferences("LISTA",Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String json = pref.getString("jsonString",null);
-        if(json == null){
-            filterPassengers = new ArrayList<>();
-        }else{
+        if(json != null){
             Type type = new TypeToken<ArrayList<FilterPassenger>>(){}.getType();
             filterPassengers = gson.fromJson(json,type);
-
+            return  filterPassengers;
         }
         return filterPassengers;
     }
